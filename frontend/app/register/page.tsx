@@ -3,14 +3,17 @@
 import { useState, useEffect } from "react";
 import Link from "next/link";
 import { useAuth } from "@/contexts/AuthContext";
-import { useTheme } from "@/contexts/ThemeContext";
-import { Button } from "@/components/ui/Button";
-import { Eye, EyeOff, ArrowLeft, Sun, Moon, Laptop, Calendar, Clock, Share2 } from "lucide-react";
-import { clsx } from "clsx";
+import {
+  Eye,
+  EyeOff,
+  ArrowLeft,
+  Calendar,
+  Clock,
+  Share2,
+} from "lucide-react";
 
 export default function RegisterPage() {
   const { register } = useAuth();
-  const { theme, setTheme } = useTheme();
 
   const [form, setForm] = useState({
     name: "",
@@ -19,27 +22,38 @@ export default function RegisterPage() {
     password: "",
     timezone: "Asia/Kolkata",
   });
-  
+
   const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
-  const [mounted, setMounted] = useState(false);
 
   useEffect(() => {
-    setMounted(true);
     try {
       const tz = Intl.DateTimeFormat().resolvedOptions().timeZone;
+
       if (tz) {
-        setForm(prev => ({ ...prev, timezone: tz }));
+        setForm((prev) => ({
+          ...prev,
+          timezone: tz,
+        }));
       }
-    } catch (e) {}
+    } catch {}
   }, []);
 
-  const set = (field: string) => (e: React.ChangeEvent<HTMLInputElement>) =>
-    setForm(prev => ({ ...prev, [field]: e.target.value }));
+  const set =
+    (field: string) =>
+    (e: React.ChangeEvent<HTMLInputElement>) => {
+      setForm((prev) => ({
+        ...prev,
+        [field]: e.target.value,
+      }));
+    };
 
-  const handleSubmit = async (e: React.FormEvent) => {
+  const handleSubmit = async (
+    e: React.FormEvent
+  ) => {
     e.preventDefault();
+
     setError("");
     setLoading(true);
 
@@ -47,395 +61,1084 @@ export default function RegisterPage() {
       await register(form);
     } catch (err: any) {
       const detail = err.response?.data?.detail;
-      setError(typeof detail === "string" ? detail : "Registration failed. Please try again.");
+
+      setError(
+        typeof detail === "string"
+          ? detail
+          : "Registration failed. Please try again."
+      );
     } finally {
       setLoading(false);
     }
   };
 
-  const hasMinLength = form.password.length >= 8;
-  const hasUpperLower = /[a-z]/.test(form.password) && /[A-Z]/.test(form.password);
-  const hasNumber = /[0-9]/.test(form.password);
+  const hasMinLength =
+    form.password.length >= 8;
+
+  const hasUpperLower =
+    /[a-z]/.test(form.password) &&
+    /[A-Z]/.test(form.password);
+
+  const hasNumber =
+    /[0-9]/.test(form.password);
 
   return (
-    <div className="relative min-h-screen flex bg-white text-zinc-900 transition-colors duration-300 dark:bg-zinc-950 dark:text-zinc-100">
-      
-      {/* Floating Theme Toggle Pill (Top-Right) */}
-      <div className="fixed top-4 right-4 z-50 flex items-center gap-0.5 rounded-full border border-zinc-100 bg-white/80 p-0.5 shadow-sm backdrop-blur-md dark:border-zinc-800 dark:bg-zinc-900/80">
-        {([
-          { mode: "system", icon: Laptop, label: "System" },
-          { mode: "light", icon: Sun, label: "Light" },
-          { mode: "dark", icon: Moon, label: "Dark" }
-        ] as const).map(({ mode, icon: Icon, label }) => {
-          const active = theme === mode;
-          return (
-            <button
-              key={mode}
-              type="button"
-              onClick={() => setTheme(mode)}
-              className={clsx(
-                "p-1.5 rounded-full transition-all duration-150 relative group",
-                active 
-                  ? "bg-zinc-900 text-white dark:bg-white dark:text-zinc-900 shadow-sm" 
-                  : "text-zinc-400 hover:text-zinc-900 dark:text-zinc-500 dark:hover:text-white"
-              )}
-              title={label}
-            >
-              <Icon size={13} />
-            </button>
+    <>
+      <style>{`
+        * {
+          box-sizing: border-box;
+        }
+
+        html,
+        body {
+          margin: 0;
+          padding: 0;
+          background: #090909;
+          font-family: Inter, sans-serif;
+        }
+
+        body::-webkit-scrollbar {
+          display: none;
+        }
+
+        .rr-wrapper {
+          min-height: 100vh;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          padding: 28px;
+          background: #090909;
+        }
+
+        .rr {
+          width: 100%;
+          max-width: 1380px;
+          min-height: 900px;
+          background: #111111;
+          border: 1px solid rgba(255,255,255,0.06);
+          border-radius: 28px;
+          overflow: hidden;
+          display: flex;
+          box-shadow:
+            0 0 0 1px rgba(255,255,255,0.02),
+            0 25px 70px rgba(0,0,0,0.55);
+        }
+
+        /* LEFT */
+
+        .rr-left {
+          width: 520px;
+          padding: 72px;
+          display: flex;
+          flex-direction: column;
+          justify-content: center;
+          background: #0d0d0d;
+        }
+
+        .rr-back {
+          display: inline-flex;
+          align-items: center;
+          gap: 7px;
+          margin-bottom: 42px;
+          color: rgba(255,255,255,0.42);
+          text-decoration: none;
+          font-size: 14px;
+          font-weight: 500;
+          transition: 0.2s;
+        }
+
+        .rr-back:hover {
+          color: white;
+        }
+
+        .rr-h1 {
+          margin: 0 0 14px;
+          font-size: 56px;
+          line-height: 0.95;
+          font-weight: 700;
+          letter-spacing: -0.06em;
+          color: white;
+        }
+
+        .rr-sub {
+          margin: 0 0 42px;
+          font-size: 18px;
+          line-height: 1.7;
+          color: rgba(255,255,255,0.42);
+        }
+
+        .rr-field {
+          margin-bottom: 18px;
+        }
+
+        .rr-label {
+          display: block;
+          margin-bottom: 8px;
+          font-size: 14px;
+          font-weight: 600;
+          color: rgba(255,255,255,0.82);
+        }
+
+        .rr-input,
+        .rr-select {
+          width: 100%;
+          height: 54px;
+          border-radius: 14px;
+          border: 1px solid rgba(255,255,255,0.1);
+          background: #181818;
+          padding: 0 16px;
+          color: white;
+          font-size: 15px;
+          outline: none;
+          transition: 0.2s;
+        }
+
+        .rr-input:focus,
+        .rr-select:focus {
+          border-color: rgba(255,255,255,0.32);
+        }
+
+        .rr-input::placeholder {
+          color: rgba(255,255,255,0.2);
+        }
+
+        .rr-select-wrap {
+          position: relative;
+        }
+
+        .rr-select {
+          appearance: none;
+          color: rgba(255,255,255,0.7);
+        }
+
+        .rr-arrow {
+          position: absolute;
+          right: 18px;
+          top: 50%;
+          transform: translateY(-50%);
+          color: rgba(255,255,255,0.32);
+        }
+
+        .rr-username {
+          display: flex;
+          align-items: center;
+          height: 54px;
+          overflow: hidden;
+          border-radius: 14px;
+          border: 1px solid rgba(255,255,255,0.1);
+          background: #181818;
+        }
+
+        .rr-prefix {
+          height: 100%;
+          display: flex;
+          align-items: center;
+          padding: 0 16px;
+          border-right: 1px solid rgba(255,255,255,0.08);
+          color: rgba(255,255,255,0.38);
+          font-size: 15px;
+        }
+
+        .rr-username input {
+          flex: 1;
+          height: 100%;
+          border: none;
+          background: transparent;
+          padding: 0 16px;
+          color: white;
+          font-size: 15px;
+          outline: none;
+        }
+
+        .rr-password {
+          position: relative;
+        }
+
+        .rr-eye {
+          position: absolute;
+          right: 16px;
+          top: 50%;
+          transform: translateY(-50%);
+          background: none;
+          border: none;
+          color: rgba(255,255,255,0.35);
+          cursor: pointer;
+        }
+
+        .rr-checks {
+          margin-top: 14px;
+          display: flex;
+          flex-direction: column;
+          gap: 8px;
+        }
+
+        .rr-check {
+          display: flex;
+          align-items: center;
+          gap: 8px;
+          font-size: 13px;
+        }
+
+        .rr-check-dot {
+          width: 6px;
+          height: 6px;
+          border-radius: 50%;
+        }
+
+        .done {
+          color: rgba(255,255,255,0.82);
+        }
+
+        .done .rr-check-dot {
+          background: white;
+        }
+
+        .pending {
+          color: rgba(255,255,255,0.3);
+        }
+
+        .pending .rr-check-dot {
+          background: rgba(255,255,255,0.15);
+        }
+
+        .rr-terms {
+          margin-top: 22px;
+          font-size: 13px;
+          line-height: 1.7;
+          color: rgba(255,255,255,0.34);
+        }
+
+        .rr-terms span {
+          color: rgba(255,255,255,0.7);
+          font-weight: 600;
+          cursor: pointer;
+        }
+
+        .rr-submit {
+          width: 100%;
+          height: 56px;
+          margin-top: 24px;
+          border: none;
+          border-radius: 14px;
+          background: white;
+          color: black;
+          font-size: 16px;
+          font-weight: 600;
+          cursor: pointer;
+          transition: 0.2s;
+        }
+
+        .rr-submit:hover {
+          opacity: 0.9;
+        }
+
+        .rr-signin {
+          margin-top: 28px;
+          font-size: 14px;
+          color: rgba(255,255,255,0.34);
+        }
+
+        .rr-signin a {
+          color: white;
+          font-weight: 600;
+          text-decoration: none;
+        }
+
+        /* RIGHT */
+
+        .rr-right {
+          flex: 1;
+          background: linear-gradient(
+            180deg,
+            #1a1a1a 0%,
+            #171717 100%
           );
-        })}
-      </div>
+          border-left: 1px solid rgba(255,255,255,0.06);
+          display: flex;
+          flex-direction: column;
+          overflow: hidden;
+        }
 
-      {/* Left - Signup Form Column (Centered Horizontally within Left Half) */}
-      <div className="flex-1 flex flex-col justify-center items-center px-8 py-12 md:px-12 lg:px-16 z-10">
-        <div className="w-full max-w-[400px] sm:max-w-[420px] transition-all">
-          
-          {/* Back Link */}
-          <Link 
-            href="/login" 
-            className="inline-flex items-center gap-1.5 text-[13.5px] font-medium text-zinc-400 hover:text-zinc-900 transition-colors mb-6 dark:text-zinc-500 dark:hover:text-white"
-          >
-            <ArrowLeft size={14} /> Back
-          </Link>
+        /* TOP BADGES */
 
-          {/* Title & Subtitle */}
-          <h1 className="text-[25px] font-semibold tracking-[-0.03em] text-zinc-900 dark:text-white">
-            Create your Cal.com account
-          </h1>
-          <p className="text-[13.5px] font-normal text-zinc-400 dark:text-zinc-500 mt-1 mb-6">
-            Free for individuals. Team plans for collaborative features.
-          </p>
+        .rr-top {
+          height: 170px;
+          padding: 34px 42px 26px;
+          border-bottom: 1px solid rgba(255,255,255,0.05);
+          display: flex;
+          align-items: flex-start;
+          justify-content: center;
+          gap: 54px;
+        }
 
-          {/* Render Backend Errors Dynamically */}
-          {error && (
-            <div className="mb-5 rounded-lg border border-red-500/10 bg-red-500/5 px-3.5 py-2.5 text-xs text-red-500 transition-all dark:border-red-500/20 dark:bg-red-500/10">
-              {error}
-            </div>
-          )}
+        .rr-badge {
+          display: flex;
+          flex-direction: column;
+          align-items: center;
+        }
 
-          {/* Form */}
-          <form onSubmit={handleSubmit} className="space-y-4">
-            
-            {/* Full Name input (required by backend) */}
-            <div>
-              <label className="mb-1 block text-[13px] font-medium text-zinc-700 dark:text-zinc-300">
-                Full name
-              </label>
-              <input
-                value={form.name} 
-                onChange={set("name")} 
-                required
-                placeholder="John Doe"
-                className="h-[38px] w-full rounded-[8px] border border-zinc-200 bg-white px-3 text-[13.5px] text-zinc-900 outline-none transition-all placeholder:text-zinc-300 hover:border-zinc-300 focus:border-zinc-900 dark:border-zinc-800 dark:bg-zinc-900/50 dark:text-white dark:placeholder:text-zinc-700 dark:hover:border-zinc-700 dark:focus:border-zinc-500"
-              />
-            </div>
+        .rr-badge-title {
+          font-size: 10px;
+          font-weight: 700;
+          letter-spacing: 0.08em;
+          text-transform: uppercase;
+          color: rgba(255,255,255,0.45);
+          margin-bottom: 4px;
+        }
 
-            {/* Dummy Data Region to match Cal.com Signup Screenshot */}
-            <div>
-              <label className="mb-1 block text-[13px] font-medium text-zinc-700 dark:text-zinc-300">
+        .rr-rank {
+          font-size: 34px;
+          line-height: 1;
+          font-weight: 700;
+          color: white;
+          margin-bottom: 8px;
+          letter-spacing: -0.05em;
+        }
+
+        .rr-stars {
+          display: flex;
+          gap: 2px;
+          color: #f59e0b;
+          font-size: 13px;
+          margin-bottom: 10px;
+        }
+
+        /* BOOKING */
+
+        .rr-booking-wrap {
+          flex: 1;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          padding: 28px 38px;
+        }
+
+        .rr-booking {
+          width: 100%;
+          max-width: 820px;
+          border-radius: 18px;
+          overflow: hidden;
+          border: 1px solid rgba(255,255,255,0.08);
+          background: #1c1c1c;
+          box-shadow:
+            0 0 0 1px rgba(255,255,255,0.02),
+            0 25px 60px rgba(0,0,0,0.45);
+        }
+
+        .rr-booking-top {
+          display: flex;
+          min-height: 520px;
+        }
+
+        /* LEFT BOOKING */
+
+        .rr-bl {
+          width: 270px;
+          border-right: 1px solid rgba(255,255,255,0.06);
+          padding: 24px;
+          background: rgba(255,255,255,0.015);
+        }
+
+        .rr-avatar {
+          width: 34px;
+          height: 34px;
+          border-radius: 50%;
+          background: linear-gradient(
+            135deg,
+            #6366f1,
+            #8b5cf6
+          );
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          color: white;
+          font-size: 11px;
+          font-weight: 700;
+        }
+
+        .rr-event {
+          margin-top: 16px;
+        }
+
+        .rr-event h3 {
+          margin: 0 0 10px;
+          font-size: 28px;
+          font-weight: 700;
+          line-height: 1;
+          letter-spacing: -0.04em;
+          color: white;
+        }
+
+        .rr-event p {
+          margin: 0;
+          font-size: 13px;
+          line-height: 1.7;
+          color: rgba(255,255,255,0.42);
+        }
+
+        /* RIGHT BOOKING */
+
+        .rr-br {
+          flex: 1;
+          padding: 22px 24px;
+        }
+
+        .rr-date {
+          font-size: 15px;
+          font-weight: 700;
+          color: white;
+          margin-bottom: 18px;
+        }
+
+        .rr-slots {
+          display: grid;
+          grid-template-columns: repeat(3,1fr);
+          gap: 14px;
+        }
+
+        .rr-col {
+          display: flex;
+          flex-direction: column;
+          gap: 8px;
+        }
+
+        .rr-day {
+          text-align: center;
+          font-size: 10px;
+          font-weight: 700;
+          letter-spacing: 0.08em;
+          color: rgba(255,255,255,0.42);
+          margin-bottom: 4px;
+        }
+
+        .rr-slot {
+          height: 34px;
+          border-radius: 8px;
+          border: 1px solid rgba(255,255,255,0.08);
+          background: rgba(255,255,255,0.02);
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          font-size: 11px;
+          font-weight: 600;
+          color: rgba(255,255,255,0.72);
+        }
+
+        .rr-slot:hover {
+          border-color: rgba(255,255,255,0.24);
+          background: rgba(255,255,255,0.05);
+          color: white;
+        }
+
+        /* FEATURES */
+
+        .rr-bottom {
+          display: grid;
+          grid-template-columns: repeat(3,1fr);
+          border-top: 1px solid rgba(255,255,255,0.06);
+          background: rgba(255,255,255,0.01);
+        }
+
+        .rr-feature {
+          padding: 26px 22px;
+        }
+
+        .rr-feature:not(:last-child) {
+          border-right: 1px solid rgba(255,255,255,0.06);
+        }
+
+        .rr-feature-title {
+          display: flex;
+          align-items: center;
+          gap: 8px;
+          margin-bottom: 10px;
+          font-size: 13px;
+          font-weight: 700;
+          color: white;
+        }
+
+        .rr-feature-title svg {
+          color: rgba(255,255,255,0.38);
+        }
+
+        .rr-feature-desc {
+          font-size: 12px;
+          line-height: 1.7;
+          color: rgba(255,255,255,0.42);
+        }
+
+      `}</style>
+
+      <div className="rr-wrapper">
+        <div className="rr">
+
+          {/* LEFT */}
+          <div className="rr-left">
+
+            <Link
+              href="/login"
+              className="rr-back"
+            >
+              <ArrowLeft size={15} />
+              Back
+            </Link>
+
+            <h1 className="rr-h1">
+              Create your Cal.com account
+            </h1>
+
+            <p className="rr-sub">
+              Free for individuals. Team plans for collaborative features.
+            </p>
+
+            {error && (
+              <div style={{ color: "#f87171" }}>
+                {error}
+              </div>
+            )}
+
+            {/* REGION */}
+            <div className="rr-field">
+              <label className="rr-label">
                 Data region
               </label>
-              <div className="relative">
-                <select
-                  disabled
-                  className="h-[38px] w-full rounded-[8px] border border-zinc-200 bg-zinc-50/50 px-3 text-[13.5px] text-zinc-500 outline-none appearance-none cursor-not-allowed dark:border-zinc-800 dark:bg-zinc-900/30 dark:text-zinc-400"
-                >
-                  <option>United States</option>
+
+              <div className="rr-select-wrap">
+
+                <select className="rr-select">
+                  <option>
+                    United States
+                  </option>
                 </select>
-                <div className="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 text-zinc-400">
-                  <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                    <path d="m6 9 6 6 6-6"/>
-                  </svg>
+
+                <div className="rr-arrow">
+                  ⌄
                 </div>
               </div>
             </div>
 
-            {/* Username Input with cal.com/ Prefix */}
-            <div>
-              <label className="mb-1 block text-[13px] font-medium text-zinc-700 dark:text-zinc-300">
-                Username
-              </label>
-              <div className="flex h-[38px] items-center rounded-[8px] border border-zinc-200 bg-white overflow-hidden transition-all focus-within:border-zinc-900 dark:border-zinc-800 dark:bg-zinc-900/50 dark:focus-within:border-zinc-500">
-                <span className="h-full flex items-center px-3 bg-zinc-50 border-r border-zinc-150 text-[13.5px] text-zinc-400 font-medium select-none dark:bg-zinc-900 dark:border-zinc-800 dark:text-zinc-500">
-                  cal.com/
-                </span>
+            {/* FORM */}
+            <form onSubmit={handleSubmit}>
+
+              {/* NAME */}
+              <div className="rr-field">
+
+                <label className="rr-label">
+                  Full Name
+                </label>
+
                 <input
-                  value={form.username} 
-                  onChange={set("username")} 
+                  className="rr-input"
+                  value={form.name}
+                  onChange={set("name")}
+                  placeholder="John Doe"
                   required
-                  placeholder="username"
-                  className="flex-1 h-full px-3 bg-transparent text-[13.5px] text-zinc-900 outline-none placeholder:text-zinc-300 dark:text-white dark:placeholder:text-zinc-700"
                 />
               </div>
-            </div>
 
-            {/* Email Input */}
-            <div>
-              <label className="mb-1 block text-[13px] font-medium text-zinc-700 dark:text-zinc-300">
-                Email
-              </label>
-              <input
-                type="email" 
-                value={form.email} 
-                onChange={set("email")} 
-                required
-                placeholder="john@doe.com"
-                className="h-[38px] w-full rounded-[8px] border border-zinc-200 bg-white px-3 text-[13.5px] text-zinc-900 outline-none transition-all placeholder:text-zinc-300 hover:border-zinc-300 focus:border-zinc-900 dark:border-zinc-800 dark:bg-zinc-900/50 dark:text-white dark:placeholder:text-zinc-700 dark:hover:border-zinc-700 dark:focus:border-zinc-500"
-              />
-            </div>
+              {/* USERNAME */}
+              <div className="rr-field">
 
-            {/* Password Input */}
-            <div>
-              <label className="mb-1 block text-[13px] font-medium text-zinc-700 dark:text-zinc-300">
-                Password
-              </label>
-              <div className="relative">
+                <label className="rr-label">
+                  Username
+                </label>
+
+                <div className="rr-username">
+
+                  <div className="rr-prefix">
+                    cal.com/
+                  </div>
+
+                  <input
+                    value={form.username}
+                    onChange={set("username")}
+                    placeholder="username"
+                    required
+                  />
+                </div>
+              </div>
+
+              {/* EMAIL */}
+              <div className="rr-field">
+
+                <label className="rr-label">
+                  Email
+                </label>
+
                 <input
-                  type={showPassword ? "text" : "password"}
-                  value={form.password} 
-                  onChange={set("password")} 
-                  required 
-                  minLength={8}
-                  placeholder="••••••••••••"
-                  className="h-[38px] w-full rounded-[8px] border border-zinc-200 bg-white px-3 pr-10 text-[13.5px] text-zinc-900 outline-none transition-all placeholder:text-zinc-300 hover:border-zinc-300 focus:border-zinc-900 dark:border-zinc-800 dark:bg-zinc-900/50 dark:text-white dark:placeholder:text-zinc-700 dark:hover:border-zinc-700 dark:focus:border-zinc-500"
+                  className="rr-input"
+                  type="email"
+                  value={form.email}
+                  onChange={set("email")}
+                  placeholder="john@example.com"
+                  required
                 />
-                <button 
-                  type="button" 
-                  onClick={() => setShowPassword(!showPassword)} 
-                  className="absolute right-3 top-1/2 -translate-y-1/2 text-zinc-400 hover:text-zinc-600 transition-colors dark:text-zinc-500 dark:hover:text-zinc-300 cursor-pointer"
-                >
-                  {showPassword ? <EyeOff size={15} /> : <Eye size={15} />}
-                </button>
               </div>
 
-              {/* Checklist items styled beautifully */}
-              <ul className="mt-2.5 space-y-1 text-[12.5px] font-medium transition-colors">
-                {[
-                  { checked: hasUpperLower, label: "Mix of uppercase & lowercase letters" },
-                  { checked: hasMinLength, label: "Minimum 8 characters long" },
-                  { checked: hasNumber, label: "Contain at least 1 number" },
-                ].map(({ checked, label }) => (
-                  <li 
-                    key={label} 
-                    className={clsx(
-                      "flex items-center gap-2 transition-colors",
-                      checked 
-                        ? "text-zinc-900 dark:text-zinc-100" 
-                        : "text-zinc-400 dark:text-zinc-500"
-                    )}
+              {/* PASSWORD */}
+              <div className="rr-field">
+
+                <label className="rr-label">
+                  Password
+                </label>
+
+                <div className="rr-password">
+
+                  <input
+                    className="rr-input"
+                    type={
+                      showPassword
+                        ? "text"
+                        : "password"
+                    }
+                    value={form.password}
+                    onChange={set("password")}
+                    placeholder="••••••••"
+                    required
+                  />
+
+                  <button
+                    type="button"
+                    className="rr-eye"
+                    onClick={() =>
+                      setShowPassword(
+                        !showPassword
+                      )
+                    }
                   >
-                    <span 
-                      className={clsx(
-                        "w-1.5 h-1.5 rounded-full transition-all",
-                        checked 
-                          ? "bg-zinc-900 dark:bg-white scale-110" 
-                          : "bg-zinc-250 dark:bg-zinc-800"
-                      )} 
-                    /> 
-                    {label}
-                  </li>
-                ))}
-              </ul>
-            </div>
+                    {showPassword ? (
+                      <EyeOff size={18} />
+                    ) : (
+                      <Eye size={18} />
+                    )}
+                  </button>
+                </div>
 
-            {/* Privacy Consent Agreement */}
-            <div className="pt-2 text-[12.5px] leading-relaxed text-zinc-450 dark:text-zinc-500">
-              By proceeding, you agree to Cal.com&apos;s{" "}
-              <span className="font-semibold text-zinc-700 hover:underline dark:text-zinc-300 cursor-pointer">Terms</span>{" "}
-              and{" "}
-              <span className="font-semibold text-zinc-700 hover:underline dark:text-zinc-300 cursor-pointer">Privacy Policy</span>.
-            </div>
+                <div className="rr-checks">
 
-            {/* Get Started Submit Button */}
-            <Button 
-              type="submit" 
-              loading={loading} 
-              className="w-full h-[38px] rounded-[8px] bg-zinc-900 text-[13.5px] font-medium text-white hover:bg-black transition-all dark:bg-white dark:text-zinc-950 dark:hover:opacity-90 cursor-pointer" 
-              size="lg"
-            >
-              Get started
-            </Button>
-          </form>
+                  <div
+                    className={`rr-check ${
+                      hasUpperLower
+                        ? "done"
+                        : "pending"
+                    }`}
+                  >
+                    <div className="rr-check-dot" />
+                    Mix of uppercase & lowercase letters
+                  </div>
 
-          {/* Shaded bottom CTA to Login page */}
-          <p className="mt-8 text-[13.5px] font-medium text-zinc-450 dark:text-zinc-500">
-            Already have an account?{" "}
-            <Link 
-              href="/login" 
-              className="font-semibold text-zinc-900 hover:underline dark:text-zinc-200"
-            >
-              Sign in
-            </Link>
-          </p>
+                  <div
+                    className={`rr-check ${
+                      hasMinLength
+                        ? "done"
+                        : "pending"
+                    }`}
+                  >
+                    <div className="rr-check-dot" />
+                    Minimum 8 characters long
+                  </div>
 
-        </div>
-      </div>
-
-      {/* Right - Premium Product Showcase & Interactive Booking Preview */}
-      <div className="hidden lg:flex flex-1 flex-col justify-between bg-zinc-50/40 p-12 border-l border-zinc-100 dark:bg-zinc-900/10 dark:border-zinc-900 transition-colors">
-        
-        {/* Top Badges Area */}
-        <div className="flex items-center justify-center gap-8 xl:gap-12">
-          {[
-            { label: "Product of the day", rank: "1st" },
-            { label: "Product of the week", rank: "1st" },
-            { label: "Product of the month", rank: "1st" }
-          ].map((badge, idx) => (
-            <div key={idx} className="flex flex-col items-center">
-              {/* laurels wreath custom geometric styling */}
-              <div className="relative flex items-center justify-center w-12 h-12">
-                <svg className="absolute w-full h-full text-amber-500/80 dark:text-amber-500/60" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
-                  <path d="M4 6c1 3.5 3 6.5 6 8.5M20 6c-1 3.5-3 6.5-6 8.5M12 4v16" strokeDasharray="1 1"/>
-                  <circle cx="12" cy="11" r="3" fill="currentColor" className="text-amber-500/10"/>
-                </svg>
-                <span className="text-[12px] font-bold text-amber-600 dark:text-amber-400 mt-0.5">{badge.rank}</span>
+                  <div
+                    className={`rr-check ${
+                      hasNumber
+                        ? "done"
+                        : "pending"
+                    }`}
+                  >
+                    <div className="rr-check-dot" />
+                    Contain at least 1 number
+                  </div>
+                </div>
               </div>
-              <span className="mt-1 text-[10px] font-bold text-zinc-400 dark:text-zinc-500 uppercase tracking-wider text-center max-w-[90px]">
-                {badge.label}
-              </span>
+
+              <div className="rr-terms">
+                By proceeding, you agree to
+                Cal.com's <span>Terms</span> and{" "}
+                <span>Privacy Policy</span>.
+              </div>
+
+              <button
+                type="submit"
+                className="rr-submit"
+                disabled={loading}
+              >
+                {loading
+                  ? "Creating..."
+                  : "Get started"}
+              </button>
+            </form>
+
+            <div className="rr-signin">
+              Already have an account?{" "}
+              <Link href="/login">
+                Sign in
+              </Link>
             </div>
-          ))}
-        </div>
+          </div>
 
-        {/* Center Booking mock screen matching the screenshot exactly */}
-        <div className="flex-1 flex items-center justify-center py-6">
-          <div className="w-full max-w-[580px] bg-white rounded-[16px] border border-zinc-150 shadow-[0_1px_3px_rgba(0,0,0,0.02),0_15px_35px_rgba(0,0,0,0.015)] overflow-hidden dark:bg-zinc-900/50 dark:border-zinc-800">
-            <div className="flex flex-col sm:flex-row divide-y sm:divide-y-0 sm:divide-x divide-zinc-100 dark:divide-zinc-800">
-              
-              {/* Preview Host Info & Minimal Calendar View */}
-              <div className="w-full sm:w-[230px] p-5 shrink-0">
-                <div className="flex items-center gap-3 mb-5">
-                  {/* Mock profile image */}
-                  <div className="w-9 h-9 rounded-full bg-gradient-to-br from-indigo-500 to-purple-600 flex items-center justify-center text-white text-xs font-semibold shadow-sm">
-                    AF
+          {/* RIGHT */}
+          <div className="rr-right">
+
+            {/* TOP */}
+            <div className="rr-top">
+
+              {[
+                {
+                  title:
+                    "Product of the day",
+                  icon: "P",
+                },
+                {
+                  title:
+                    "Product of the week",
+                  icon: "G",
+                },
+                {
+                  title:
+                    "Product of the month",
+                  icon: "G",
+                },
+              ].map((item, i) => (
+                <div
+                  className="rr-badge"
+                  key={i}
+                >
+
+                  <div className="rr-badge-title">
+                    {item.title}
                   </div>
-                  <div>
-                    <p className="text-[11px] font-semibold text-zinc-400 dark:text-zinc-500 uppercase tracking-wider">Alex Fisher</p>
-                    <p className="text-[13.5px] font-semibold text-zinc-900 dark:text-white">Design Workshop</p>
+
+                  <div className="rr-rank">
+                    1st
+                  </div>
+
+                  <div className="rr-stars">
+                    ★★★★★
+                  </div>
+
+                  <div
+                    style={{
+                      width: 34,
+                      height: 34,
+                      borderRadius: "50%",
+                      background:
+                        i === 1
+                          ? "#4285f4"
+                          : "#ef4444",
+                      display: "flex",
+                      alignItems:
+                        "center",
+                      justifyContent:
+                        "center",
+                      color: "white",
+                      fontWeight: 700,
+                      fontSize: 14,
+                    }}
+                  >
+                    {item.icon}
                   </div>
                 </div>
+              ))}
+            </div>
 
-                <div className="space-y-2.5 text-[12px] font-medium text-zinc-500 dark:text-zinc-400 mb-5">
-                  <div className="flex items-start gap-2">
-                    <span className="text-zinc-400 mt-0.5">🕐</span>
-                    <span>A longer chat to run through design.</span>
-                  </div>
-                  <div className="flex items-center gap-2">
-                    <span className="text-zinc-400">⏱️</span> 30 mins
-                  </div>
-                  <div className="flex items-center gap-2">
-                    <span className="text-zinc-400">📹</span> Zoom
-                  </div>
-                  <div className="flex items-center gap-2">
-                    <span className="text-zinc-400">🌍</span> Europe/Dublin
-                  </div>
-                </div>
+            {/* BOOKING */}
+            <div className="rr-booking-wrap">
 
-                {/* Micro Calendar Mockup */}
-                <div className="border-t border-zinc-100 pt-4 dark:border-zinc-800">
-                  <div className="flex justify-between items-center text-[12px] font-bold text-zinc-800 dark:text-zinc-200 mb-3">
-                    <span>June 2023</span>
-                    <div className="flex gap-1.5 text-zinc-400">
-                      <span className="cursor-pointer hover:text-zinc-900">&lt;</span>
-                      <span className="cursor-pointer hover:text-zinc-900">&gt;</span>
+              <div className="rr-booking">
+
+                <div className="rr-booking-top">
+
+                  {/* LEFT */}
+                  <div className="rr-bl">
+
+                    <div className="rr-avatar">
+                      AF
+                    </div>
+
+                    <div className="rr-event">
+
+                      <h3>
+                        Design Workshop
+                      </h3>
+
+                      <p>
+                        A longer chat to run
+                        through design.
+                      </p>
+                    </div>
+
+                    <div
+                      style={{
+                        marginTop: 24,
+                        display: "flex",
+                        flexDirection:
+                          "column",
+                        gap: 10,
+                        color:
+                          "rgba(255,255,255,0.45)",
+                        fontSize: 12,
+                      }}
+                    >
+                      <div>
+                        ⏱️ 30 mins
+                      </div>
+
+                      <div>
+                        📹 Zoom
+                      </div>
+
+                      <div>
+                        🌍 Europe/Dublin
+                      </div>
+                    </div>
+
+                    {/* CALENDAR */}
+                    <div
+                      style={{
+                        marginTop: 28,
+                        borderTop:
+                          "1px solid rgba(255,255,255,0.06)",
+                        paddingTop: 18,
+                      }}
+                    >
+
+                      <div
+                        style={{
+                          display:
+                            "flex",
+                          justifyContent:
+                            "space-between",
+                          marginBottom: 16,
+                          color: "white",
+                          fontSize: 13,
+                          fontWeight: 700,
+                        }}
+                      >
+                        <span>
+                          June 2023
+                        </span>
+
+                        <span
+                          style={{
+                            color:
+                              "rgba(255,255,255,0.3)",
+                          }}
+                        >
+                          ‹ ›
+                        </span>
+                      </div>
+
+                      <div
+                        style={{
+                          display:
+                            "grid",
+                          gridTemplateColumns:
+                            "repeat(7,1fr)",
+                          gap: 6,
+                          textAlign:
+                            "center",
+                          fontSize: 10,
+                          color:
+                            "rgba(255,255,255,0.3)",
+                        }}
+                      >
+                        {[
+  "S",
+  "M",
+  "T",
+  "W",
+  "T",
+  "F",
+  "S",
+].map((d, i) => (
+  <div key={i}>
+    {d}
+  </div>
+))}
+                      </div>
+
+                      <div
+                        style={{
+                          display:
+                            "grid",
+                          gridTemplateColumns:
+                            "repeat(7,1fr)",
+                          gap: 6,
+                          marginTop: 12,
+                        }}
+                      >
+                        {Array.from(
+                          { length: 30 },
+                          (_, i) => {
+                            const active =
+                              i + 1 >= 20 &&
+                              i + 1 <= 23;
+
+                            return (
+                              <div
+                                key={i}
+                                style={{
+                                  height: 28,
+                                  borderRadius: 6,
+                                  background:
+                                    active
+                                      ? "rgba(255,255,255,0.15)"
+                                      : "transparent",
+                                  display:
+                                    "flex",
+                                  alignItems:
+                                    "center",
+                                  justifyContent:
+                                    "center",
+                                  color:
+                                    active
+                                      ? "white"
+                                      : "rgba(255,255,255,0.32)",
+                                  fontSize: 11,
+                                }}
+                              >
+                                {i + 1}
+                              </div>
+                            );
+                          }
+                        )}
+                      </div>
                     </div>
                   </div>
-                  <div className="grid grid-cols-7 gap-1 text-center text-[9px] font-bold text-zinc-400 mb-1">
-                    {["S","M","T","W","T","F","S"].map((d, i) => <span key={i}>{d}</span>)}
-                  </div>
-                  <div className="grid grid-cols-7 gap-1 text-[10px] text-center font-medium">
-                    {Array.from({ length: 30 }, (_, i) => {
-                      const day = i + 1;
-                      const active = day >= 20 && day <= 24;
-                      return (
-                        <span 
-                          key={i} 
-                          className={clsx(
-                            "py-0.5 rounded-full select-none",
-                            active 
-                              ? "bg-zinc-900 text-white font-bold dark:bg-white dark:text-zinc-900" 
-                              : "text-zinc-400 dark:text-zinc-600"
+
+                  {/* RIGHT */}
+                  <div className="rr-br">
+
+                    <div className="rr-date">
+                      Jun 20, 2023
+                    </div>
+
+                    <div className="rr-slots">
+
+                      {[
+                        {
+                          day:
+                            "MON 20",
+                          slots: [
+                            "9:30 am",
+                            "10:00 am",
+                            "10:30 am",
+                            "11:00 am",
+                            "11:30 am",
+                            "12:00 pm",
+                            "12:30 pm",
+                            "5:30 pm",
+                            "6:30 pm",
+                          ],
+                        },
+                        {
+                          day:
+                            "TUE 21",
+                          slots: [
+                            "9:30 am",
+                            "10:00 am",
+                            "10:30 am",
+                            "11:00 am",
+                            "11:30 am",
+                            "12:00 pm",
+                            "12:30 pm",
+                          ],
+                        },
+                        {
+                          day:
+                            "WED 22",
+                          slots: [
+                            "9:30 am",
+                            "10:00 am",
+                            "11:30 am",
+                            "6:30 pm",
+                          ],
+                        },
+                      ].map((col, i) => (
+                        <div
+                          className="rr-col"
+                          key={i}
+                        >
+
+                          <div className="rr-day">
+                            {col.day}
+                          </div>
+
+                          {col.slots.map(
+                            (
+                              slot,
+                              j
+                            ) => (
+                              <div
+                                className="rr-slot"
+                                key={j}
+                              >
+                                {slot}
+                              </div>
+                            )
                           )}
-                        >
-                          {day}
-                        </span>
-                      );
-                    })}
-                  </div>
-                </div>
-              </div>
-
-              {/* Stacked Interactive Slot Columns Mockup */}
-              <div className="flex-1 p-5 bg-zinc-50/20 dark:bg-zinc-900/10">
-                <div className="flex items-center justify-between text-[13px] font-bold text-zinc-800 dark:text-zinc-200 mb-4">
-                  <span>Jun 20, 2023</span>
-                  <div className="flex gap-2 text-zinc-400 text-[11px] font-semibold select-none">
-                    <span className="cursor-pointer hover:text-zinc-900">&lt;</span>
-                    <span className="cursor-pointer hover:text-zinc-900">&gt;</span>
-                  </div>
-                </div>
-
-                <div className="grid grid-cols-3 gap-2">
-                  {[
-                    { day: "MON 20", slots: ["9:30 am", "10:00 am", "10:30 am", "11:00 am", "11:30 am", "12:00 pm", "12:30 pm", "5:30 pm", "6:30 pm"] },
-                    { day: "TUE 21", slots: ["9:30 am", "10:00 am", "10:30 am", "11:00 am", "11:30 am", "12:00 pm", "12:30 pm", "5:30 pm", "6:30 pm"] },
-                    { day: "WED 22", slots: ["9:30 am", "10:00 am", "11:30 am", "6:30 pm"] }
-                  ].map((col, idx) => (
-                    <div key={idx} className="flex flex-col gap-1.5">
-                      <span className="text-[10px] font-bold text-zinc-400 dark:text-zinc-500 text-center tracking-wider mb-1 uppercase">
-                        {col.day}
-                      </span>
-                      {col.slots.map((t, sIdx) => (
-                        <div 
-                          key={sIdx} 
-                          className="h-[30px] flex items-center justify-center rounded-[6px] border border-zinc-150 bg-white text-[11.5px] font-semibold text-zinc-700 hover:border-zinc-900 hover:text-zinc-900 cursor-pointer transition-all dark:border-zinc-800 dark:bg-zinc-900/60 dark:text-zinc-300 dark:hover:border-zinc-300 dark:hover:text-white select-none shadow-sm"
-                        >
-                          {t}
                         </div>
                       ))}
                     </div>
-                  ))}
+                  </div>
+                </div>
+
+                {/* FEATURES */}
+                <div className="rr-bottom">
+
+                  {[
+                    {
+                      icon:
+                        Calendar,
+                      title:
+                        "Connect all your calendars",
+                      desc:
+                        "Cal.com reads availability from all your existing calendars.",
+                    },
+                    {
+                      icon:
+                        Clock,
+                      title:
+                        "Set your availability",
+                      desc:
+                        "Set schedules for the times you want to be booked.",
+                    },
+                    {
+                      icon:
+                        Share2,
+                      title:
+                        "Share a link or embed",
+                      desc:
+                        "Share your Cal.com link or embed on your site.",
+                    },
+                  ].map(
+                    (
+                      item,
+                      i
+                    ) => (
+                      <div
+                        className="rr-feature"
+                        key={i}
+                      >
+
+                        <div className="rr-feature-title">
+                          <item.icon size={14} />
+                          {item.title}
+                        </div>
+
+                        <div className="rr-feature-desc">
+                          {item.desc}
+                        </div>
+                      </div>
+                    )
+                  )}
                 </div>
               </div>
-
             </div>
           </div>
-        </div>
 
-        {/* Benefits Footer columns at the bottom */}
-        <div className="grid grid-cols-3 gap-4 border-t border-zinc-150 pt-8 dark:border-zinc-900">
-          {[
-            { 
-              icon: Calendar, 
-              title: "Connect all your calendars", 
-              desc: "Cal.com reads availability from all your existing calendars." 
-            },
-            { 
-              icon: Clock, 
-              title: "Set your availability", 
-              desc: "Set schedules for the times you want to be booked." 
-            },
-            { 
-              icon: Share2, 
-              title: "Share a link or embed", 
-              desc: "Share your Cal.com link or embed on your site." 
-            }
-          ].map((benefit, idx) => (
-            <div key={idx} className="flex flex-col">
-              <div className="flex items-center gap-1.5 text-zinc-900 dark:text-white">
-                <benefit.icon size={14} className="text-zinc-400 dark:text-zinc-500" />
-                <h4 className="text-[11.5px] font-bold tracking-tight">{benefit.title}</h4>
-              </div>
-              <p className="mt-1 text-[11px] font-medium leading-normal text-zinc-400 dark:text-zinc-500">
-                {benefit.desc}
-              </p>
-            </div>
-          ))}
         </div>
-
       </div>
-
-    </div>
+    </>
   );
 }
