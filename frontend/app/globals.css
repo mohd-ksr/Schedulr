@@ -1,0 +1,116 @@
+@import "tailwindcss";
+
+@variant dark (&:where(.dark, .dark *));
+
+:root {
+  --bg: #ffffff;
+  --surface: #f9fafb;
+  --card: #ffffff;
+  --border: #e5e7eb;
+  --muted: #d1d5db;
+  --text: #111827;
+  --text-secondary: #6b7280;
+  --text-muted: #9ca3af;
+  --sidebar-bg: #ffffff;
+  --sidebar-border: #e5e7eb;
+  --sidebar-hover: #f3f4f6;
+  --sidebar-active: #f3f4f6;
+  --input-bg: #ffffff;
+  --input-border: #d1d5db;
+  --toggle-on: #111827;
+  --toggle-off: #d1d5db;
+}
+
+.dark {
+  --bg: #101010;
+  --surface: #1a1a1a;
+  --card: #1c1c1c;
+  --border: #2a2a2a;
+  --muted: #404040;
+  --text: #ffffff;
+  --text-secondary: #9ca3af;
+  --text-muted: #6b7280;
+  --sidebar-bg: #1a1a1a;
+  --sidebar-border: #2a2a2a;
+  --sidebar-hover: #262626;
+  --sidebar-active: #2d2d2d;
+  --input-bg: #1c1c1c;
+  --input-border: #2e2e2e;
+  --toggle-on: #ffffff;
+  --toggle-off: #404040;
+}
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  background-color: var(--bg);
+  color: var(--text);
+  font-family: "Inter", system-ui, -apple-system, sans-serif;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* Scrollbar */
+::-webkit-scrollbar { width: 6px; height: 6px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: var(--muted); border-radius: 3px; }
+::-webkit-scrollbar-thumb:hover { background: var(--text-muted); }
+
+/* Input base styles */
+input, textarea, select {
+  background-color: var(--input-bg);
+  border-color: var(--input-border);
+  color: var(--text);
+}
+
+input::placeholder, textarea::placeholder {
+  color: var(--text-muted);
+}
+
+/* Toggle switch */
+.toggle {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  width: 40px;
+  height: 22px;
+  border-radius: 11px;
+  background: var(--toggle-off);
+  cursor: pointer;
+  transition: background 0.2s;
+  flex-shrink: 0;
+}
+.toggle.on { background: var(--toggle-on); }
+.toggle::after {
+  content: '';
+  position: absolute;
+  left: 2px;
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  background: white;
+  transition: transform 0.2s;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.3);
+}
+.dark .toggle::after { background: #111; }
+.toggle.on::after { transform: translateX(18px); }
+
+/* Cal.com style badge */
+.badge-hidden {
+  background: #451a03;
+  color: #f59e0b;
+  font-size: 11px;
+  padding: 2px 8px;
+  border-radius: 4px;
+  font-weight: 500;
+}
+
+/* Dotted world map for auth pages */
+.auth-bg {
+  background-color: var(--bg);
+  background-image: radial-gradient(circle, var(--muted) 1px, transparent 1px);
+  background-size: 24px 24px;
+}
